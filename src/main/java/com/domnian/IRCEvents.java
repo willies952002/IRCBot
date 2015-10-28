@@ -1,5 +1,8 @@
 package com.domnian;
 
+import com.domnian.command.CommandManager;
+import com.domnian.command.builtin.About;
+import org.schwering.irc.lib.IRCConnection;
 import org.schwering.irc.lib.IRCEventListener;
 import org.schwering.irc.lib.IRCUser;
 import org.schwering.irc.lib.util.IRCModeParser;
@@ -27,12 +30,12 @@ public class IRCEvents implements IRCEventListener {
 
     @Override
     public void onError(String s) {
-        System.err.println("Error [null]: " + s);
+        Util.error("[null]: " + s);
     }
 
     @Override
     public void onError(int i, String s) {
-        System.err.println("Error [" + i + "]: " + s);
+        Util.error("[" + i + "]: " + s);
     }
 
     @Override
@@ -84,8 +87,18 @@ public class IRCEvents implements IRCEventListener {
     }
 
     @Override
-    public void onPrivmsg(String s, IRCUser ircUser, String s1) {
-
+    public void onPrivmsg(String target, IRCUser user, String msg) {
+        Util.info(user.getNick() + " : " + msg);
+        if ( msg.startsWith("!") ) {
+            String command = msg.substring(1);
+            Util.info("Command: " + command);
+            try {
+                CommandManager.executeCommand(command, user);
+            } catch (Exception e) {
+                Util.error(e.getMessage());
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -95,7 +108,7 @@ public class IRCEvents implements IRCEventListener {
 
     @Override
     public void onReply(int i, String s, String s1) {
-        System.out.println("Reply [" + i + "]: " + s + " -> " + s1);
+        System.out.println("Reply [" + i + "]: " + s1);
     }
 
     @Override

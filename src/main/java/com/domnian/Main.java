@@ -5,6 +5,7 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 import static java.util.Arrays.asList;
 
@@ -49,6 +50,29 @@ public class Main {
                 Util.severe(e.getMessage());
             }
         } else {
+            try {
+                Backend.init();
+            } catch (Exception e) {
+                Util.severe("Unable to Initialize Backend");
+            }
+        }
+
+        while ( true ) {
+            Scanner scanner = new Scanner(System.in);
+            if ( scanner.hasNext() ) {
+                String msg = scanner.nextLine();
+                if ( msg.startsWith("/") ) {
+                    String command = msg.substring(1);
+                    Util.info("Outbound Command: " + command);
+                    String[] arg = command.split(" ");
+                    switch (arg[0]) {
+                        case "join": Backend.getConnection().doJoin(arg[1]); break;
+                        case "quit": Backend.getConnection().doQuit("Bot Disconnecting"); System.exit(0); break;
+                    }
+                } else {
+                    Backend.getConnection().doPrivmsg(BotConfiguration.getChannel(), msg);
+                }
+            }
         }
 
     }

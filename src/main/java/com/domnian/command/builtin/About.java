@@ -26,8 +26,6 @@ public class About implements BotCommand {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
 }

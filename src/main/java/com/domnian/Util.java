@@ -13,7 +13,7 @@ package com.domnian;
 public class Util {
 
     public static void success(String msg) {
-        System.err.println("\033[7;32m" + msg + "\033[0m");
+        System.out.println("\033[7;32m" + msg + "\033[0m");
     }
 
     public static void severe(String msg) {
@@ -25,7 +25,11 @@ public class Util {
     }
 
     public static void info(String msg) {
-        System.err.println("\033[0;37m" + msg + "\033[0m");
+        System.out.println("\033[0;37m" + msg + "\033[0m");
+    }
+
+    public static void debug(String msg) {
+        System.out.println("\033[0;35m" + msg + "\033[0m");
     }
 
     public static void line() {
@@ -36,4 +40,5 @@ public class Util {
         System.out.print("\033[0m");
         System.out.println();
     }
+
 }

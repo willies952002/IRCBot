@@ -1,13 +1,14 @@
 package com.domnian.command;
 
-import com.domnian.Backend;
 import com.domnian.BotConfiguration;
 import com.domnian.Util;
-import org.schwering.irc.lib.IRCConnection;
+import com.domnian.command.builtin.About;
+import com.domnian.command.builtin.EMC;
+import com.domnian.command.builtin.Restart;
 import org.schwering.irc.lib.IRCUser;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URLClassLoader;
 
 /**
  * ==================================================================
@@ -21,14 +22,29 @@ import java.net.URLClassLoader;
  */
 public class CommandManager {
 
-    public static void executeCommand(String command, IRCUser user) throws Exception {
+    public static void executeCommand(String command, IRCUser user) {
+        BotCommand cmd;
+        switch (command) {
+            case "about": new About().execute(BotConfiguration.getChannel(), user); break;
+            case "emc": new EMC().execute(BotConfiguration.getChannel(), user); break;
+            case "restart": new Restart().execute(BotConfiguration.getChannel(), user); break;
+        }
+    }
+
+    @Deprecated
+    public static void INVALID_executeCommand(String command, IRCUser user) {
         String className = "com.domnian.command.builtin." + properCase(command);
         Util.debug("Command Class: " + className);
-        for ( Method m : Class.forName(className).getDeclaredMethods() ) {
-            Util.debug("Declared Method: " + m.getName());
+        Class cmdClass = null;
+        try {
+            cmdClass = Class.forName(className);
+            Method execute = cmdClass.getDeclaredMethod("execute");
+            execute.invoke(BotConfiguration.getChannel(), user);
+        } catch (ClassNotFoundException e) {
+            Util.error("No Such Command: " + command);
+        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+            e.printStackTrace();
         }
-        Method execute = Class.forName(className).getDeclaredMethod("execute");
-        execute.invoke(BotConfiguration.getChannel(), user);
     }
 
     private static String properCase(String inputVal) {

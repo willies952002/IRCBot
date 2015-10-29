@@ -109,6 +109,9 @@ public class IRCEvents implements IRCEventListener {
     @Override
     public void onReply(int i, String s, String s1) {
         System.out.println("Reply [" + i + "]: " + s1);
+        if ( i == 396 ) {
+            Backend.getConnection().doJoin(BotConfiguration.getChannel());
+        }
     }
 
     @Override

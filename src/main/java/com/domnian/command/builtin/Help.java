@@ -1,8 +1,6 @@
 package com.domnian.command.builtin;
 
-import com.domnian.Backend;
 import com.domnian.command.BotCommand;
-import org.schwering.irc.lib.IRCConnection;
 import org.schwering.irc.lib.IRCUser;
 
 /**
@@ -15,14 +13,17 @@ import org.schwering.irc.lib.IRCUser;
  * void any agreements with you, the third party. Thanks
  * ==================================================================
  */
-public class EMC implements BotCommand {
+public class Help extends BotCommand {
+
     @Override
     public void execute(String chan, IRCUser user) {
-        try {
-            IRCConnection conn = Backend.getConnection();
-            conn.doPrivmsg(chan, "(" + user.getNick() + ") Check out Empire Minecraft: http://ref.emc.gs/willies952002");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        String nick = user.getNick();
+        conn.doNotice(nick, ">>------[ Domnian IRC Bot Core Help ]------<<");
+        conn.doNotice(nick, "!help - Display This Help Message");
+        conn.doNotice(nick, "!about - Display Information About This Bot");
+        conn.doNotice(nick, "!quit - Shutdown The Running Bot Instance");
+        conn.doNotice(nick, "!restart - Restart The Running Bot Instance");
+        conn.doNotice(nick, "!die - Alias Command for !quit");
     }
+
 }

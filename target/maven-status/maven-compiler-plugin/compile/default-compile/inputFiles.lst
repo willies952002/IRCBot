@@ -22,5 +22,7 @@
 /home/willies952002/GIT Repositories/DomnianIRCBot/src/main/java/org/json/JSONWriter.java
 /home/willies952002/GIT Repositories/DomnianIRCBot/src/main/java/org/json/JSONObject.java
 /home/willies952002/GIT Repositories/DomnianIRCBot/src/main/java/org/json/JSONArray.java
-/home/willies952002/GIT Repositories/DomnianIRCBot/src/main/java/com/domnian/command/builtin/EMC.java
+/home/willies952002/GIT Repositories/DomnianIRCBot/src/main/java/com/domnian/PomData.java
+/home/willies952002/GIT Repositories/DomnianIRCBot/src/main/java/com/domnian/command/builtin/Quit.java
+/home/willies952002/GIT Repositories/DomnianIRCBot/src/main/java/com/domnian/command/builtin/Help.java
 /home/willies952002/GIT Repositories/DomnianIRCBot/src/main/java/com/domnian/command/builtin/Restart.java

@@ -1,5 +1,7 @@
 package com.domnian.command;
 
+import com.domnian.Backend;
+import org.schwering.irc.lib.IRCConnection;
 import org.schwering.irc.lib.IRCUser;
 
 /**
@@ -12,8 +14,10 @@ import org.schwering.irc.lib.IRCUser;
  * void any agreements with you, the third party. Thanks
  * ==================================================================
  */
-public interface BotCommand {
+public abstract class BotCommand {
 
-    void execute(String chan, IRCUser user);
+    public IRCConnection conn = Backend.getConnection();
+
+    public abstract void execute(String chan, IRCUser user);
 
 }

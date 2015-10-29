@@ -1,11 +1,16 @@
 package com.domnian;
 
 import com.domnian.command.CommandManager;
-import com.domnian.command.builtin.About;
-import org.schwering.irc.lib.IRCConnection;
+import org.json.JSONObject;
 import org.schwering.irc.lib.IRCEventListener;
 import org.schwering.irc.lib.IRCUser;
 import org.schwering.irc.lib.util.IRCModeParser;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Scanner;
+
+import static com.domnian.Backend.getVersion;
 
 /**
  * ==================================================================
@@ -18,6 +23,28 @@ import org.schwering.irc.lib.util.IRCModeParser;
  * ==================================================================
  */
 public class IRCEvents implements IRCEventListener {
+    private static String VERSION_REPLY = "VERSION DomnianIRCBot " + getVersion() + " / " + sysInfo();
+
+    private static String sysInfo() {
+        String osName = System.getProperty("os.name");
+        String osVer = System.getProperty("os.version");
+        String osArch = "";
+        if ( osName.contains("Linux") ) {
+            try {
+                Process proc = Runtime.getRuntime().exec("uname -m");
+                InputStream in = proc.getInputStream();
+                Scanner sc = new Scanner(in);
+                osArch = sc.nextLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            osArch = "ERROR (OS Not Yet Supported)";
+        }
+        return osName + " " + osVer + " [" + osArch + "]";
+
+    }
+
     @Override
     public void onRegistered() {
 
@@ -41,7 +68,7 @@ public class IRCEvents implements IRCEventListener {
     @Override
     public void onInvite(String chan, IRCUser inviter, String invited) {
         if ( invited.equals(BotConfiguration.getNickName()) ) {
-            System.out.println("Invite: Bot Invited To " + chan);
+            System.out.println("Invite: Bot Invited To " + chan + " by " + inviter.getNick());
             Backend.getConnection().doJoin(chan);
         }
     }
@@ -67,8 +94,8 @@ public class IRCEvents implements IRCEventListener {
     }
 
     @Override
-    public void onNick(IRCUser ircUser, String s) {
 
+    public void onNick(IRCUser ircUser, String s) {
     }
 
     @Override
@@ -91,13 +118,23 @@ public class IRCEvents implements IRCEventListener {
         Util.info(user.getNick() + " : " + msg);
         if ( msg.startsWith("!") ) {
             String command = msg.substring(1);
-            Util.info("Command: " + command);
             try {
                 CommandManager.executeCommand(command, user);
             } catch (Exception e) {
                 Util.error(e.getMessage());
                 e.printStackTrace();
             }
+        }
+        if ( msg.equals("VERSION") ) {
+            try {
+                Backend.getConnection().doNotice(user.getNick(), VERSION_REPLY);
+            } catch (Exception e) {
+                Backend.getConnection().doNotice(user.getNick(), "VERSION Error Occurred While Obtaining Version");
+                e.printStackTrace();
+            }
+        }
+        if ( msg.equals("PING") ) {
+            Backend.getConnection().doNotice(user.getNick(), "Pong");
         }
     }
 

@@ -40,5 +40,5 @@ buildNumber.properties
 # Misc. Ignores
 # =============================================================================
 config.json
-build.sh
-run.sh
+*.sh
+commands/

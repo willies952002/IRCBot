@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 public class BotConfigurationTest {
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() throws Exception {
         BotConfiguration.load("config.json");
     }
 

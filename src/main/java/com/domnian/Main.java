@@ -1,8 +1,11 @@
 package com.domnian;
 
+import com.domnian.command.CommandManager;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import org.schwering.irc.lib.IRCUser;
+import org.schwering.irc.lib.impl.DefaultIRCUser;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -20,6 +23,8 @@ import static java.util.Arrays.asList;
  * ==================================================================
  */
 public class Main {
+
+    public static String CHANNEL;
 
     public static void main(String[] args) {
         OptionParser parser = new OptionParser() {
@@ -57,6 +62,14 @@ public class Main {
             }
         }
 
+        // Load Bot Commands Commands
+        CommandManager.load();
+
+        // Create Command Executor
+        IRCUser executor = new DefaultIRCUser(BotConfiguration.getNickName(), BotConfiguration.getUserName(), "irc.domnian.com");
+
+        CHANNEL = BotConfiguration.getChannel();
+
         while ( true ) {
             Scanner scanner = new Scanner(System.in);
             if ( scanner.hasNext() ) {
@@ -66,11 +79,11 @@ public class Main {
                     Util.info("Outbound Command: " + command);
                     String[] arg = command.split(" ");
                     switch (arg[0]) {
-                        case "join": Backend.getConnection().doJoin(arg[1]); break;
-                        case "quit": Backend.getConnection().doQuit("Bot Disconnecting"); System.exit(0); break;
+                        case "join": Backend.getConnection().doJoin(arg[1]); CHANNEL = arg[1]; break;
+                        case "quit": CommandManager.executeCommand("quit", executor); break;
                     }
                 } else {
-                    Backend.getConnection().doPrivmsg(BotConfiguration.getChannel(), msg);
+                    Backend.getConnection().doPrivmsg(CHANNEL, msg);
                 }
             }
         }

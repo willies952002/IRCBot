@@ -2,7 +2,6 @@ package com.domnian.command.builtin;
 
 import com.domnian.Backend;
 import com.domnian.command.BotCommand;
-import org.schwering.irc.lib.IRCConnection;
 import org.schwering.irc.lib.IRCUser;
 
 /**
@@ -15,18 +14,13 @@ import org.schwering.irc.lib.IRCUser;
  * void any agreements with you, the third party. Thanks
  * ==================================================================
  */
-public class About extends BotCommand {
+public class Quit extends BotCommand {
 
+    @Override
     public void execute(String chan, IRCUser user) {
-        try {
-            String nick = user.getNick();
-            conn.doNotice(nick, "About This Bot:");
-            conn.doNotice(nick, "  Version: " + Backend.getVersion());
-            conn.doNotice(nick, "  Developer: willies952002");
-            conn.doNotice(nick, "  Source: https://github.com/willies952002/IRCBot");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        conn.doPrivmsg(chan, "Good Bye!");
+        conn.doQuit("Bot Disconnecting");
+        System.exit(0);
     }
 
 }

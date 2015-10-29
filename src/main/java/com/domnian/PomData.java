@@ -1,7 +1,5 @@
 package com.domnian;
 
-import java.io.File;
-
 /**
  * ==================================================================
  * Copyright Domnian Dev. (c) 2015. All Rights Reserved
@@ -12,18 +10,8 @@ import java.io.File;
  * void any agreements with you, the third party. Thanks
  * ==================================================================
  */
-public class BackendTest {
+public class PomData {
 
-    @org.junit.Before
-    public void setUp() throws Exception {
-        File config = new File("config.json");
-        if ( config.createNewFile() ) {
-            BotConfiguration.writeDefault(config);
-        }
-    }
+    public static final String VERSION = "0.2.0";
 
-    @org.junit.Test
-    public void testInit() throws Exception {
-        Backend.init();
-    }
 }

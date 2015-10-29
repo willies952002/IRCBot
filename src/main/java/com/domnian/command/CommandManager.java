@@ -1,14 +1,18 @@
 package com.domnian.command;
 
+import com.domnian.Backend;
 import com.domnian.BotConfiguration;
+import com.domnian.Main;
 import com.domnian.Util;
-import com.domnian.command.builtin.About;
-import com.domnian.command.builtin.EMC;
-import com.domnian.command.builtin.Restart;
+import com.domnian.command.builtin.*;
 import org.schwering.irc.lib.IRCUser;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * ==================================================================
@@ -22,28 +26,15 @@ import java.lang.reflect.Method;
  */
 public class CommandManager {
 
+    private static HashMap<String, BotCommand> commands = new HashMap<>();
+    
     public static void executeCommand(String command, IRCUser user) {
-        BotCommand cmd;
-        switch (command) {
-            case "about": new About().execute(BotConfiguration.getChannel(), user); break;
-            case "emc": new EMC().execute(BotConfiguration.getChannel(), user); break;
-            case "restart": new Restart().execute(BotConfiguration.getChannel(), user); break;
-        }
-    }
-
-    @Deprecated
-    public static void INVALID_executeCommand(String command, IRCUser user) {
-        String className = "com.domnian.command.builtin." + properCase(command);
-        Util.debug("Command Class: " + className);
-        Class cmdClass = null;
-        try {
-            cmdClass = Class.forName(className);
-            Method execute = cmdClass.getDeclaredMethod("execute");
-            execute.invoke(BotConfiguration.getChannel(), user);
-        } catch (ClassNotFoundException e) {
-            Util.error("No Such Command: " + command);
-        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-            e.printStackTrace();
+        BotCommand cmd = commands.get(command.toLowerCase());
+        if ( cmd != null ) {
+            cmd.execute(Main.CHANNEL, user);
+        } else {
+            Util.info("No Such Command: " + command);
+            //Backend.getConnection().doNotice(user.getNick(), "No Such Command: " + command);
         }
     }
 
@@ -51,6 +42,52 @@ public class CommandManager {
         if (inputVal.length() == 0) return "";
         if (inputVal.length() == 1) return inputVal.toUpperCase();
         return inputVal.substring(0,1).toUpperCase() + inputVal.substring(1).toLowerCase();
+    }
+
+    public static void load() {
+        commands.put("help", new Help());
+        commands.put("about", new About());
+        commands.put("quit", new Quit());
+        commands.put("restart", new Restart());
+        commands.put("die", new Quit());
+        File dir = new File("commands");
+        if (!dir.exists()) {
+            Util.severe("No commands loaded! Cannot find directory 'commands' - Creating it");
+            dir.mkdir();
+            return;
+        }
+        ClassLoader loader;
+        try {
+            loader = new URLClassLoader(new URL[] { dir.toURI().toURL() },
+                    CommandManager.class.getClassLoader());
+        } catch (MalformedURLException ex) {
+            Util.error("Error while configuring command class loader");
+            ex.printStackTrace();
+            return;
+        }
+        for (File file : dir.listFiles()) {
+            if (!file.getName().endsWith(".class")) {
+                continue;
+            }
+            String name = file.getName().substring(0,
+                    file.getName().lastIndexOf("."));
+
+            try {
+                Class<?> clazz = loader.loadClass(name);
+                Object object = clazz.newInstance();
+                if (!(object instanceof BotCommand)) {
+                    Util.info("Not a Command: " + clazz.getSimpleName());
+                    continue;
+                }
+                BotCommand command = (BotCommand) object;
+                commands.put(clazz.getSimpleName().toLowerCase(), command);
+                Util.info("Loaded Command: " + command.getClass().getSimpleName());
+            }
+            catch (Exception | Error ex) {
+                Util.error("Error loading '" + name + "' command! Command disabled.");
+                ex.printStackTrace();
+            }
+        }
     }
 
 }

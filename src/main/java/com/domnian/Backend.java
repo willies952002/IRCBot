@@ -61,8 +61,6 @@ public class Backend {
             connection.doJoin(BotConfiguration.getChannel());
             Util.info("Setting Mode +B");
             connection.doMode(BotConfiguration.getNickName(), "+B");
-            Util.info("Sending Private Message to willies952002");
-            connection.doPrivmsg("willies952002", "Hello Sir");
         } else {
             Util.severe("Unable to Connect To IRC Server - Exiting");
             System.exit(1);
@@ -75,20 +73,26 @@ public class Backend {
         return connection;
     }
 
-    public static String getVersion() throws Exception {
-        MessageDigest md = MessageDigest.getInstance("SHA1");
-        FileInputStream fis = new FileInputStream(new File("pom.xml"));
-        byte[] dataBytes = new byte[1024];
-        int nread = 0;
-        while ((nread = fis.read(dataBytes)) != -1) {
-            md.update(dataBytes, 0, nread);
-        };
-        byte[] mdbytes = md.digest();
-        StringBuffer sb = new StringBuffer("");
-        for (byte mdbyte : mdbytes) {
-            sb.append(Integer.toString((mdbyte & 0xff) + 0x100, 16).substring(1));
+    public static String getVersion() {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA1");
+            FileInputStream fis = new FileInputStream(new File("pom.xml"));
+            byte[] dataBytes = new byte[1024];
+            int nread = 0;
+            while ((nread = fis.read(dataBytes)) != -1) {
+                md.update(dataBytes, 0, nread);
+            }
+            ;
+            byte[] mdbytes = md.digest();
+            StringBuffer sb = new StringBuffer("");
+            for (byte mdbyte : mdbytes) {
+                sb.append(Integer.toString((mdbyte & 0xff) + 0x100, 16).substring(1));
+            }
+            return PomData.VERSION + "-" + sb.toString().substring(0, 8);
+        } catch (Exception e) {
+            Util.severe("Error Getting Version String");
+            e.printStackTrace();
+            return "ERROR";
         }
-        String impVersion = Backend.class.getPackage().getImplementationVersion();
-        return impVersion + "-" + sb.toString().substring(0, 8);
     }
 }

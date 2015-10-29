@@ -1,8 +1,6 @@
 package com.domnian.command.builtin;
 
-import com.domnian.Backend;
 import com.domnian.command.BotCommand;
-import org.schwering.irc.lib.IRCConnection;
 import org.schwering.irc.lib.IRCUser;
 
 /**
@@ -15,16 +13,16 @@ import org.schwering.irc.lib.IRCUser;
  * void any agreements with you, the third party. Thanks
  * ==================================================================
  */
-public class Restart implements BotCommand {
-    @Override
+public class Restart extends BotCommand {
+
     public void execute(String chan, IRCUser user) {
         try {
-            IRCConnection conn = Backend.getConnection();
-            conn.doPrivmsg(chan, "Restaring - I'll Be Right Back!");
-            Runtime.getRuntime().exec("bash run.sh");
-            System.exit(0);
+            //conn.doPrivmsg(chan, "Restaring - I'll Be Right Back!");
+            conn.doPrivmsg(chan, "This Command Is Not Supported Right Now");
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
+
 }

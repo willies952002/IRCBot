@@ -25,7 +25,7 @@ public class BotConfiguration {
         writeDefault(new File(System.getProperty("user.dir") + File.separator + fileName));
     }
 
-    private static void writeDefault(File file) throws Exception {
+    public static void writeDefault(File file) throws Exception {
         JSONObject defaultJson = new JSONObject();
         JSONObject connectDefault = new JSONObject();
         JSONObject identDefault = new JSONObject();
@@ -44,11 +44,14 @@ public class BotConfiguration {
         fos.close();
     }
 
-    public static void load(String fileName) throws IOException {
+    public static void load(String fileName) throws Exception {
         load(new File(System.getProperty("user.dir") + File.separator + fileName));
     }
 
-    public static void load(File file) throws IOException {
+    public static void load(File file) throws Exception {
+        if ( file.createNewFile() ) {
+            BotConfiguration.writeDefault(file);
+        }
         FileInputStream fis = new FileInputStream(file);
         byte[] buffer = new byte[1024];
         fis.read(buffer);

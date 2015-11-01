@@ -15,7 +15,7 @@ import org.schwering.irc.lib.IRCUser;
  */
 public class Restart extends BotCommand {
 
-    public void execute(String chan, IRCUser user) {
+    public void execute(String chan, IRCUser user, String[] args) {
         try {
             //conn.doPrivmsg(chan, "Restaring - I'll Be Right Back!");
             conn.doPrivmsg(chan, "This Command Is Not Supported Right Now");

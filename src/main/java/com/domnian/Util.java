@@ -1,5 +1,8 @@
 package com.domnian;
 
+import java.security.SecureRandom;
+import java.util.Random;
+
 /**
  * ==================================================================
  * Copyright Domnian Dev. (c) 2015. All Rights Reserved
@@ -39,6 +42,16 @@ public class Util {
         }
         System.out.print("\033[0m");
         System.out.println();
+    }
+
+    public static String properCase(String inputVal) {
+        if (inputVal.length() == 0) return "";
+        if (inputVal.length() == 1) return inputVal.toUpperCase();
+        return inputVal.substring(0, 1).toUpperCase() + inputVal.substring(1).toLowerCase();
+    }
+
+    public static String randomString(String[] strings) {
+        return strings[new Random().nextInt()];
     }
 
 }

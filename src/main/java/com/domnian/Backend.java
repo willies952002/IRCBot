@@ -1,5 +1,6 @@
 package com.domnian;
 
+import com.domnian.module.ModuleManager;
 import org.schwering.irc.lib.*;
 
 import java.io.File;
@@ -59,8 +60,6 @@ public class Backend {
             Util.info("Connection Port: " + connection.getPort());
             Util.info("Joining Channel " + BotConfiguration.getChannel());
             connection.doJoin(BotConfiguration.getChannel());
-            Util.info("Setting Mode +B");
-            connection.doMode(BotConfiguration.getNickName(), "+B");
         } else {
             Util.severe("Unable to Connect To IRC Server - Exiting");
             System.exit(1);

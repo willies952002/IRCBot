@@ -99,8 +99,19 @@ public class IRCEvents implements IRCEventListener {
     }
 
     @Override
-    public void onNotice(String s, IRCUser ircUser, String s1) {
-
+    public void onNotice(String target, IRCUser ircUser, String msg) {
+        if ( target.equals(BotConfiguration.getNickName()) ) {
+            if ( ircUser.getNick().equals("NickServ") ) {
+                if ( msg.equals("This nickname is registered. Please choose a different nickname, or identify via /msg NickServ identify <password>.")) {
+                    if ( BotConfiguration.isAuth() ) {
+                        Backend.getConnection().doPrivmsg("NickServ", "IDENTIFY " + BotConfiguration.getAuthPass());
+                    } else {
+                        Util.severe("Nick requires Authentication but Authentication is Disabled!");
+                        System.exit(1);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -146,6 +157,9 @@ public class IRCEvents implements IRCEventListener {
     @Override
     public void onReply(int i, String s, String s1) {
         System.out.println("Reply [" + i + "]: " + s1);
+        if ( i == 376 ) {
+            Backend.getConnection().doMode(BotConfiguration.getNickName(), "+B");
+        }
         if ( i == 396 ) {
             Backend.getConnection().doJoin(BotConfiguration.getChannel());
         }

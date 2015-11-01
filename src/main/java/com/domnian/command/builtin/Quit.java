@@ -1,6 +1,5 @@
 package com.domnian.command.builtin;
 
-import com.domnian.Backend;
 import com.domnian.command.BotCommand;
 import org.schwering.irc.lib.IRCUser;
 
@@ -17,7 +16,7 @@ import org.schwering.irc.lib.IRCUser;
 public class Quit extends BotCommand {
 
     @Override
-    public void execute(String chan, IRCUser user) {
+    public void execute(String chan, IRCUser user, String[] args) {
         conn.doPrivmsg(chan, "Good Bye!");
         conn.doQuit("Bot Disconnecting");
         System.exit(0);

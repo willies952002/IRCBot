@@ -1,17 +1,17 @@
 package com.domnian.command;
 
-import com.domnian.Backend;
-import com.domnian.BotConfiguration;
 import com.domnian.Main;
 import com.domnian.Util;
-import com.domnian.command.builtin.*;
+import com.domnian.command.builtin.About;
+import com.domnian.command.builtin.Help;
+import com.domnian.command.builtin.Quit;
+import com.domnian.command.builtin.Restart;
 import org.schwering.irc.lib.IRCUser;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -29,19 +29,18 @@ public class CommandManager {
     private static HashMap<String, BotCommand> commands = new HashMap<>();
     
     public static void executeCommand(String command, IRCUser user) {
-        BotCommand cmd = commands.get(command.toLowerCase());
+        String[] split = command.split(" ");
+        String[] args = new String[split.length - 1];
+        for ( int i = 1; i < split.length; i++ ) {
+            args[i-1] = split[i];
+        }
+        BotCommand cmd = commands.get(split[0].toLowerCase());
         if ( cmd != null ) {
-            cmd.execute(Main.CHANNEL, user);
+            cmd.execute(Main.CHANNEL, user, args);
         } else {
             Util.info("No Such Command: " + command);
             //Backend.getConnection().doNotice(user.getNick(), "No Such Command: " + command);
         }
-    }
-
-    private static String properCase(String inputVal) {
-        if (inputVal.length() == 0) return "";
-        if (inputVal.length() == 1) return inputVal.toUpperCase();
-        return inputVal.substring(0,1).toUpperCase() + inputVal.substring(1).toLowerCase();
     }
 
     public static void load() {

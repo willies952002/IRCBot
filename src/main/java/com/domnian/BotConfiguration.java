@@ -1,9 +1,10 @@
 package com.domnian;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 /**
  * ==================================================================
@@ -17,9 +18,9 @@ import java.io.*;
  */
 public class BotConfiguration {
 
-    private static JSONObject configJson;
     private static JSONObject connectJson;
     private static JSONObject identJson;
+    private static JSONObject authJson;
 
     public static void writeDefault(String fileName) throws Exception {
         writeDefault(new File(System.getProperty("user.dir") + File.separator + fileName));
@@ -29,6 +30,7 @@ public class BotConfiguration {
         JSONObject defaultJson = new JSONObject();
         JSONObject connectDefault = new JSONObject();
         JSONObject identDefault = new JSONObject();
+        JSONObject authDefault = new JSONObject();
         connectDefault.put("host", "irc.spi.gt");
         connectDefault.put("port", 6667);
         connectDefault.put("ssl", false);
@@ -39,6 +41,9 @@ public class BotConfiguration {
         identDefault.put("nick", "WilliesIRCBot");
         identDefault.put("real", "Willies IRC Bot");
         defaultJson.put("ident", identDefault);
+        authDefault.put("run", false);
+        authDefault.put("password", "");
+        defaultJson.put("auth", authDefault);
         FileOutputStream fos = new FileOutputStream(file);
         fos.write(defaultJson.toString().getBytes("UTF-8"));
         fos.close();
@@ -55,9 +60,10 @@ public class BotConfiguration {
         FileInputStream fis = new FileInputStream(file);
         byte[] buffer = new byte[1024];
         fis.read(buffer);
-        configJson = new JSONObject(new String(buffer));
+        JSONObject configJson = new JSONObject(new String(buffer));
         connectJson = configJson.getJSONObject("connect");
         identJson = configJson.getJSONObject("ident");
+        authJson = configJson.getJSONObject("auth");
     }
 
 
@@ -106,6 +112,14 @@ public class BotConfiguration {
     public static String getRealName() {
         String real = identJson.getString("real");
         return (real.length() > 0) ? real : "NullReal";
+    }
+
+    public static boolean isAuth() {
+        return authJson.getBoolean("run");
+    }
+
+    public static String getAuthPass() {
+        return isAuth() ? authJson.getString("password") : "";
     }
 
 }

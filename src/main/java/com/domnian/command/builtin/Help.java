@@ -16,7 +16,7 @@ import org.schwering.irc.lib.IRCUser;
 public class Help extends BotCommand {
 
     @Override
-    public void execute(String chan, IRCUser user) {
+    public void execute(String chan, IRCUser user, String[] args) {
         String nick = user.getNick();
         conn.doNotice(nick, ">>------[ Domnian IRC Bot Core Help ]------<<");
         conn.doNotice(nick, "!help - Display This Help Message");

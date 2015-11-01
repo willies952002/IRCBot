@@ -18,6 +18,6 @@ public abstract class BotCommand {
 
     public IRCConnection conn = Backend.getConnection();
 
-    public abstract void execute(String chan, IRCUser user);
+    public abstract void execute(String chan, IRCUser user, String[] args);
 
 }

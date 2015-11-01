@@ -1,6 +1,7 @@
 package com.domnian;
 
 import com.domnian.command.CommandManager;
+import com.domnian.module.ModuleManager;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -25,6 +26,7 @@ import static java.util.Arrays.asList;
 public class Main {
 
     public static String CHANNEL;
+    private static ModuleManager manager;
 
     public static void main(String[] args) {
         OptionParser parser = new OptionParser() {
@@ -69,6 +71,7 @@ public class Main {
         IRCUser executor = new DefaultIRCUser(BotConfiguration.getNickName(), BotConfiguration.getUserName(), "irc.domnian.com");
 
         CHANNEL = BotConfiguration.getChannel();
+        manager = ModuleManager.load();
 
         while ( true ) {
             Scanner scanner = new Scanner(System.in);
@@ -89,5 +92,7 @@ public class Main {
         }
 
     }
+
+    public static ModuleManager getModuleManager() { return manager; }
 
 }

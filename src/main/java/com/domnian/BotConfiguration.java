@@ -21,7 +21,7 @@ public class BotConfiguration {
 
     private static JSONObject connectJson;
     private static JSONObject identJson;
-    private static JSONObject authJson;
+    private static JSONObject nickServJson;
     private static String manage;
 
     public static void writeDefault(String fileName) throws Exception {
@@ -32,7 +32,7 @@ public class BotConfiguration {
         JSONObject defaultJson = new JSONObject();
         JSONObject connectDefault = new JSONObject();
         JSONObject identDefault = new JSONObject();
-        JSONObject authDefault = new JSONObject();
+        JSONObject nickservDefault = new JSONObject();
         connectDefault.put("host", "irc.spi.gt");
         connectDefault.put("port", 6667);
         connectDefault.put("ssl", false);
@@ -43,10 +43,10 @@ public class BotConfiguration {
         identDefault.put("nick", "WilliesIRCBot");
         identDefault.put("real", "Willies IRC Bot");
         defaultJson.put("ident", identDefault);
-        authDefault.put("run", false);
-        authDefault.put("email", "email@example.com");
-        authDefault.put("password", "");
-        defaultJson.put("auth", authDefault);
+        nickservDefault.put("run", false);
+        nickservDefault.put("email", "email@example.com");
+        nickservDefault.put("password", "");
+        defaultJson.put("nickserv", nickservDefault);
         defaultJson.put("manage", "admin");
         FileOutputStream fos = new FileOutputStream(file);
         fos.write(defaultJson.toString().getBytes("UTF-8"));
@@ -67,7 +67,7 @@ public class BotConfiguration {
         JSONObject configJson = new JSONObject(new String(buffer));
         connectJson = configJson.getJSONObject("connect");
         identJson = configJson.getJSONObject("ident");
-        authJson = configJson.getJSONObject("auth");
+        nickServJson = configJson.getJSONObject("auth");
         manage = configJson.getString("manage");
     }
 
@@ -95,7 +95,7 @@ public class BotConfiguration {
         return connectJson.getBoolean("ssl");
     }
 
-    public static String getPass() {
+    public static String getServerPass() {
         String pass = connectJson.getString("pass");
         return (pass.length() > 0) ? pass : null;
     }
@@ -120,15 +120,15 @@ public class BotConfiguration {
     }
 
     public static boolean isAuth() {
-        return authJson.getBoolean("run");
+        return nickServJson.getBoolean("run");
     }
 
-    public static String getAuthPass() {
-        return isAuth() ? authJson.getString("password") : "";
+    public static String getNickServPass() {
+        return isAuth() ? nickServJson.getString("password") : "";
     }
 
-    public static String getAuthEmail() {
-        return isAuth() ? authJson.getString("email") : "";
+    public static String getNickServEmail() {
+        return isAuth() ? nickServJson.getString("email") : "";
     }
 
     public static PermissionLevel getManagePerm() {

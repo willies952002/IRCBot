@@ -118,7 +118,7 @@ public class IRCEvents implements IRCEventListener {
             if ( user.getNick().equals("NickServ") ) {
                 if ( msg.equals(ATHEME_NS_MSG) || msg.equals(ANOPE_NS_MSG)) {
                     if ( BotConfiguration.isAuth() ) {
-                        Backend.getConnection().doPrivmsg("NickServ", "IDENTIFY " + BotConfiguration.getAuthPass());
+                        Backend.getConnection().doPrivmsg("NickServ", "IDENTIFY " + BotConfiguration.getNickServPass());
                     } else {
                         Util.severe("Nick requires Authentication but Authentication is Disabled!");
                         System.exit(1);

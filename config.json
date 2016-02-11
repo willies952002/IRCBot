@@ -1,0 +1,20 @@
+{
+  "nickserv":{
+    "email":"",
+    "password":"",
+    "run":false
+  },
+  "ident":{
+    "nick":"MyIRCBot",
+    "real":"My IRC Bot",
+    "user":"MyIRCBot"
+  },
+  "connect":{
+    "port":6667,
+    "pass":"",
+    "host":"irc.example.com",
+    "channel":"#bots",
+    "ssl":false
+  },
+  "manage":"admin"
+}

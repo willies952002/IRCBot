@@ -3,8 +3,6 @@ package com.domnian;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-
 import static org.junit.Assert.*;
 
 /**
@@ -44,8 +42,8 @@ public class BotConfigurationTest {
 
     @Test
     public void testGetPass() throws Exception {
-        System.out.println("Pass: " + BotConfiguration.getPass());
-        assertEquals(BotConfiguration.getPass(), null);
+        System.out.println("Pass: " + BotConfiguration.getServerPass());
+        assertEquals(BotConfiguration.getServerPass(), null);
     }
 
     @Test

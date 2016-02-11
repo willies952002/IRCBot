@@ -33,8 +33,8 @@ public class Backend {
         confBuilder.nick(BotConfiguration.getNickName());
         confBuilder.realname(BotConfiguration.getRealName());
         confBuilder.username(BotConfiguration.getUserName());
-        if (BotConfiguration.getPass() != null) {
-            confBuilder.password(BotConfiguration.getPass());
+        if (BotConfiguration.getServerPass() != null) {
+            confBuilder.password(BotConfiguration.getServerPass());
         }
         confBuilder.stripColors(true);
         Util.info("Creating IRC Connection");

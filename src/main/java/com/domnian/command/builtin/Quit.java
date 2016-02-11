@@ -1,6 +1,10 @@
 package com.domnian.command.builtin;
 
+import com.domnian.Backend;
+import com.domnian.BotConfiguration;
+import com.domnian.api.API;
 import com.domnian.command.BotCommand;
+import com.domnian.command.PermissionLevel;
 import org.schwering.irc.lib.IRCUser;
 
 /**
@@ -16,10 +20,14 @@ import org.schwering.irc.lib.IRCUser;
 public class Quit extends BotCommand {
 
     @Override
-    public void execute(String chan, IRCUser user, String[] args) {
-        conn.doPrivmsg(chan, "Good Bye!");
-        conn.doQuit("Bot Disconnecting");
-        System.exit(0);
+    public void execute(String chan, IRCUser user, String[] args, PermissionLevel level) {
+        if ( PermissionLevel.check(level, BotConfiguration.getManagePerm()) ) {
+            API.privateMessage(chan, "Good Bye!");
+            Backend.getConnection().doQuit("Bot Disconnecting");
+            System.exit(0);
+        } else {
+            API.notice(user.getNick(), "I'm very sorry, but you don't have permission to do that.");
+        }
     }
 
 }

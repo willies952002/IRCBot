@@ -1,7 +1,9 @@
 package com.domnian.command.builtin;
 
 import com.domnian.Backend;
+import com.domnian.api.API;
 import com.domnian.command.BotCommand;
+import com.domnian.command.PermissionLevel;
 import org.schwering.irc.lib.IRCUser;
 
 /**
@@ -16,13 +18,13 @@ import org.schwering.irc.lib.IRCUser;
  */
 public class About extends BotCommand {
 
-    public void execute(String chan, IRCUser user, String[] args) {
+    public void execute(String chan, IRCUser user, String[] args, PermissionLevel ignored) {
         try {
             String nick = user.getNick();
-            conn.doNotice(nick, "About This Bot:");
-            conn.doNotice(nick, "  Version: " + Backend.getVersion());
-            conn.doNotice(nick, "  Developer: willies952002");
-            conn.doNotice(nick, "  Source: https://github.com/willies952002/IRCBot");
+            API.notice(nick, "About This Bot:");
+            API.notice(nick, "  Version: " + Backend.getVersion());
+            API.notice(nick, "  Developer: willies952002");
+            API.notice(nick, "  Source: https://github.com/willies952002/IRCBot");
         } catch (Exception e) {
             e.printStackTrace();
         }

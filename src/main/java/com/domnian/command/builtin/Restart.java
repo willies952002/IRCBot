@@ -1,6 +1,9 @@
 package com.domnian.command.builtin;
 
+import com.domnian.BotConfiguration;
+import com.domnian.api.API;
 import com.domnian.command.BotCommand;
+import com.domnian.command.PermissionLevel;
 import org.schwering.irc.lib.IRCUser;
 
 /**
@@ -15,12 +18,11 @@ import org.schwering.irc.lib.IRCUser;
  */
 public class Restart extends BotCommand {
 
-    public void execute(String chan, IRCUser user, String[] args) {
-        try {
-            //conn.doPrivmsg(chan, "Restaring - I'll Be Right Back!");
-            conn.doPrivmsg(chan, "This Command Is Not Supported Right Now");
-        } catch (Exception e) {
-            e.printStackTrace();
+    public void execute(String chan, IRCUser user, String[] args, PermissionLevel level) {
+        if ( PermissionLevel.check(level, BotConfiguration.getManagePerm()) ) {
+            API.notice(user.getNick(), "This Command Is Not Supported Right Now");
+        } else {
+            API.notice(user.getNick(), "I'm very sorry, but you don't have permission to do that.");
         }
 
     }

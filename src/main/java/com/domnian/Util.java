@@ -16,23 +16,23 @@ import java.util.Random;
 public class Util {
 
     public static void success(String msg) {
-        System.out.println("\033[7;32m" + msg + "\033[0m");
+        System.out.println(" \033[7;32m" + msg + "\033[0m");
     }
 
     public static void severe(String msg) {
-        System.err.println("\033[7;31m" + msg + "\033[0m");
+        System.err.println(" \033[7;31m" + msg + "\033[0m");
     }
 
     public static void error(String msg) {
-        System.err.println("\033[7;33m" + msg + "\033[0m");
+        System.err.println(" \033[7;33m" + msg + "\033[0m");
     }
 
     public static void info(String msg) {
-        System.out.println("\033[0;37m" + msg + "\033[0m");
+        System.out.println(" \033[0;37m" + msg + "\033[0m");
     }
 
     public static void debug(String msg) {
-        System.out.println("\033[0;35m" + msg + "\033[0m");
+        System.out.println(" \033[0;35m" + msg + "\033[0m");
     }
 
     public static void line() {
@@ -51,7 +51,7 @@ public class Util {
     }
 
     public static String randomString(String[] strings) {
-        return strings[new Random().nextInt()];
+        return strings[new Random().nextInt(strings.length)];
     }
 
 }

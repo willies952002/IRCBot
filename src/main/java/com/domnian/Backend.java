@@ -1,17 +1,8 @@
 package com.domnian;
 
-import com.domnian.module.ModuleManager;
-import org.schwering.irc.lib.*;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import org.schwering.irc.lib.IRCConfigBuilder;
+import org.schwering.irc.lib.IRCConnection;
+import org.schwering.irc.lib.IRCConnectionFactory;
 
 /**
  * ==================================================================
@@ -73,25 +64,19 @@ public class Backend {
     }
 
     public static String getVersion() {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA1");
-            FileInputStream fis = new FileInputStream(new File("pom.xml"));
-            byte[] dataBytes = new byte[1024];
-            int nread = 0;
-            while ((nread = fis.read(dataBytes)) != -1) {
-                md.update(dataBytes, 0, nread);
+        return Main.class.getPackage().getImplementationVersion();
+    }
+
+    public static void reconnect() throws Exception {
+        Util.info("Trying to Reconnecting...");
+        if ( connection.isConnected() ) {
+            Util.error("Already Connected, Aborting Reconnection!");
+        } else {
+            connection.connect();
+            if ( connection.isConnected() ) {
+                Util.success("Successfully Reconnected to " + BotConfiguration.getHost());
             }
-            ;
-            byte[] mdbytes = md.digest();
-            StringBuffer sb = new StringBuffer("");
-            for (byte mdbyte : mdbytes) {
-                sb.append(Integer.toString((mdbyte & 0xff) + 0x100, 16).substring(1));
-            }
-            return PomData.VERSION + "-" + sb.toString().substring(0, 8);
-        } catch (Exception e) {
-            Util.severe("Error Getting Version String");
-            e.printStackTrace();
-            return "ERROR";
         }
     }
+
 }

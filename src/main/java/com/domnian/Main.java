@@ -1,5 +1,6 @@
 package com.domnian;
 
+import com.domnian.api.API;
 import com.domnian.command.CommandManager;
 import com.domnian.module.ModuleManager;
 import joptsimple.OptionException;
@@ -27,6 +28,7 @@ public class Main {
 
     public static String CHANNEL;
     private static ModuleManager manager;
+    private static IRCUser executor;
 
     public static void main(String[] args) {
         OptionParser parser = new OptionParser() {
@@ -47,12 +49,14 @@ public class Main {
         if ((options == null) || (options.has("?"))) {
             try {
                 parser.printHelpOn(System.out);
+                System.exit(0);
             } catch (IOException e) {
                 Util.severe(e.getMessage());
             }
         } else if (options.has("v")) {
             try {
-                Util.info("Version: " + Backend.getVersion());
+                Util.info("Domnian IRC Bot Version: " + Backend.getVersion());
+                System.exit(0);
             } catch (Exception e) {
                 Util.severe(e.getMessage());
             }
@@ -70,6 +74,7 @@ public class Main {
         // Create Command Executor
         IRCUser executor = new DefaultIRCUser(BotConfiguration.getNickName(), BotConfiguration.getUserName(), "irc.domnian.com");
 
+        API.init();
         CHANNEL = BotConfiguration.getChannel();
         manager = ModuleManager.load();
 
@@ -83,7 +88,7 @@ public class Main {
                     String[] arg = command.split(" ");
                     switch (arg[0]) {
                         case "join": Backend.getConnection().doJoin(arg[1]); CHANNEL = arg[1]; break;
-                        case "quit": CommandManager.executeCommand("quit", executor); break;
+                        case "quit": API.quit(); break;
                     }
                 } else {
                     Backend.getConnection().doPrivmsg(CHANNEL, msg);
@@ -95,4 +100,7 @@ public class Main {
 
     public static ModuleManager getModuleManager() { return manager; }
 
+    public static IRCUser getExecutor() {
+        return executor;
+    }
 }

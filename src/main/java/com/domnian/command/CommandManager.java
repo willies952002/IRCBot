@@ -1,11 +1,8 @@
 package com.domnian.command;
 
-import com.domnian.Main;
 import com.domnian.Util;
-import com.domnian.command.builtin.About;
-import com.domnian.command.builtin.Help;
-import com.domnian.command.builtin.Quit;
-import com.domnian.command.builtin.Restart;
+import com.domnian.api.API;
+import com.domnian.command.builtin.*;
 import org.schwering.irc.lib.IRCUser;
 
 import java.io.File;
@@ -28,7 +25,7 @@ public class CommandManager {
 
     private static HashMap<String, BotCommand> commands = new HashMap<>();
     
-    public static void executeCommand(String command, IRCUser user) {
+    public static void executeCommand(String command, IRCUser user, String target, PermissionLevel level) {
         String[] split = command.split(" ");
         String[] args = new String[split.length - 1];
         for ( int i = 1; i < split.length; i++ ) {
@@ -36,22 +33,24 @@ public class CommandManager {
         }
         BotCommand cmd = commands.get(split[0].toLowerCase());
         if ( cmd != null ) {
-            cmd.execute(Main.CHANNEL, user, args);
+            cmd.execute(target, user, args, level);
         } else {
             Util.info("No Such Command: " + command);
-            //Backend.getConnection().doNotice(user.getNick(), "No Such Command: " + command);
+            API.notice(user.getNick(), "No Such Command: " + command);
         }
     }
 
     public static void load() {
         commands.put("help", new Help());
+        commands.put("dhelp", new Help());
         commands.put("about", new About());
         commands.put("quit", new Quit());
         commands.put("restart", new Restart());
         commands.put("die", new Quit());
+        commands.put("time", new Time());
         File dir = new File("commands");
         if (!dir.exists()) {
-            Util.severe("No commands loaded! Cannot find directory 'commands' - Creating it");
+            Util.error("No commands loaded! Cannot find directory 'commands' - Creating it");
             dir.mkdir();
             return;
         }
@@ -87,6 +86,22 @@ public class CommandManager {
                 ex.printStackTrace();
             }
         }
+    }
+
+    public static HashMap<String, BotCommand> getLoadedCommands() {
+        return commands;
+    }
+
+    public static HashMap<String, BotCommand> getInstalledCommands() {
+        HashMap<String, BotCommand> cmds = commands;
+        cmds.remove("help");
+        cmds.remove("dhelp");
+        cmds.remove("about");
+        cmds.remove("quit");
+        cmds.remove("restart");
+        cmds.remove("die");
+        cmds.remove("time");
+        return cmds;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.domnian;
 
+import com.domnian.command.PermissionLevel;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -21,6 +22,7 @@ public class BotConfiguration {
     private static JSONObject connectJson;
     private static JSONObject identJson;
     private static JSONObject authJson;
+    private static String manage;
 
     public static void writeDefault(String fileName) throws Exception {
         writeDefault(new File(System.getProperty("user.dir") + File.separator + fileName));
@@ -42,8 +44,10 @@ public class BotConfiguration {
         identDefault.put("real", "Willies IRC Bot");
         defaultJson.put("ident", identDefault);
         authDefault.put("run", false);
+        authDefault.put("email", "email@example.com");
         authDefault.put("password", "");
         defaultJson.put("auth", authDefault);
+        defaultJson.put("manage", "admin");
         FileOutputStream fos = new FileOutputStream(file);
         fos.write(defaultJson.toString().getBytes("UTF-8"));
         fos.close();
@@ -64,6 +68,7 @@ public class BotConfiguration {
         connectJson = configJson.getJSONObject("connect");
         identJson = configJson.getJSONObject("ident");
         authJson = configJson.getJSONObject("auth");
+        manage = configJson.getString("manage");
     }
 
 
@@ -122,4 +127,11 @@ public class BotConfiguration {
         return isAuth() ? authJson.getString("password") : "";
     }
 
+    public static String getAuthEmail() {
+        return isAuth() ? authJson.getString("email") : "";
+    }
+
+    public static PermissionLevel getManagePerm() {
+        return PermissionLevel.valueOf(manage.toUpperCase());
+    }
 }

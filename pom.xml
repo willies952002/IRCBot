@@ -6,11 +6,18 @@
 
     <groupId>com.domnian</groupId>
     <artifactId>DomnianIRCBot</artifactId>
-    <version>0.2.0</version>
+    <version>0.4.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>bintray</id>
+            <url>http://dl.bintray.com/irclib/irclib/</url>
+        </repository>
+    </repositories>
 
     <developers>
         <developer>
@@ -31,7 +38,7 @@
         <dependency>
             <groupId>org.schwering</groupId>
             <artifactId>irclib</artifactId>
-            <version>2.0.0.Alpha4-SNAPSHOT</version>
+            <version>2.0.0.Alpha3</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -44,9 +51,15 @@
             <artifactId>jopt-simple</artifactId>
             <version>4.9</version>
         </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20151123</version>
+        </dependency>
     </dependencies>
 
     <build>
+        <finalName>${project.name}-${project.version}-${maven.build.timestamp}</finalName>
         <defaultGoal>clean install</defaultGoal>
         <plugins>
             <plugin>
@@ -89,30 +102,9 @@
                     <archive>
                         <manifest>
                             <mainClass>com.domnian.Main</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.google.code.maven-replacer-plugin</groupId>
-                <artifactId>replacer</artifactId>
-                <version>1.5.3</version>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>replace</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <file>src/main/java/com/domnian/PomData.java</file>
-                    <replacements>
-                        <replacement>
-                            <token>VERSION = ".*";</token>
-                            <value>VERSION = "${project.version}";</value>
-                        </replacement>
-                    </replacements>
                 </configuration>
             </plugin>
         </plugins>

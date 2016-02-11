@@ -1,13 +1,16 @@
 package com.domnian;
 
+import com.domnian.api.API;
 import com.domnian.command.CommandManager;
-import org.json.JSONObject;
+import com.domnian.command.PermissionTable;
+import com.domnian.command.PermissionLevel;
 import org.schwering.irc.lib.IRCEventListener;
 import org.schwering.irc.lib.IRCUser;
 import org.schwering.irc.lib.util.IRCModeParser;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Scanner;
 
 import static com.domnian.Backend.getVersion;
@@ -23,6 +26,9 @@ import static com.domnian.Backend.getVersion;
  * ==================================================================
  */
 public class IRCEvents implements IRCEventListener {
+
+    private static final String ATHEME_NS_MSG = "This nickname is registered. Please choose a different nickname, or identify via /msg NickServ identify <password>.";
+    private static final String ANOPE_NS_MSG = "This nickname is registered and protected.  If it is your nick, type /msg NickServ IDENTIFY password.  Otherwise, please choose a different nick.";
     private static String VERSION_REPLY = "VERSION DomnianIRCBot " + getVersion() + " / " + sysInfo();
 
     private static String sysInfo() {
@@ -56,13 +62,17 @@ public class IRCEvents implements IRCEventListener {
     }
 
     @Override
-    public void onError(String s) {
-        Util.error("[null]: " + s);
+    public void onError(String msg) {
+        onError(-1, msg);
     }
 
     @Override
-    public void onError(int i, String s) {
-        Util.error("[" + i + "]: " + s);
+    public void onError(int id, String msg) {
+        Util.error("Error [" + id + "]: " + msg);
+        if ( id == 464 &&  msg.equals("Invalid Password" ) ) {
+            Util.severe("Incorrect Server Password!");
+            System.exit(1);
+        }
     }
 
     @Override
@@ -74,8 +84,11 @@ public class IRCEvents implements IRCEventListener {
     }
 
     @Override
-    public void onJoin(String s, IRCUser ircUser) {
-
+    public void onJoin(String chan, IRCUser user) {
+        if ( chan.equals(BotConfiguration.getChannel()) ) {
+            List<String> lines = API.loadFile("resources/" + chan.substring(1) + "-welcome.txt");
+            API.notice(user.getNick(), lines.get(0));
+        }
     }
 
     @Override
@@ -94,15 +107,16 @@ public class IRCEvents implements IRCEventListener {
     }
 
     @Override
-
     public void onNick(IRCUser ircUser, String s) {
+
     }
 
     @Override
-    public void onNotice(String target, IRCUser ircUser, String msg) {
+    public void onNotice(String target, IRCUser user, String msg) {
+        Util.info("NOTICE: " + target + " <" + user.getNick() + "> " + msg);
         if ( target.equals(BotConfiguration.getNickName()) ) {
-            if ( ircUser.getNick().equals("NickServ") ) {
-                if ( msg.equals("This nickname is registered. Please choose a different nickname, or identify via /msg NickServ identify <password>.")) {
+            if ( user.getNick().equals("NickServ") ) {
+                if ( msg.equals(ATHEME_NS_MSG) || msg.equals(ANOPE_NS_MSG)) {
                     if ( BotConfiguration.isAuth() ) {
                         Backend.getConnection().doPrivmsg("NickServ", "IDENTIFY " + BotConfiguration.getAuthPass());
                     } else {
@@ -120,8 +134,8 @@ public class IRCEvents implements IRCEventListener {
     }
 
     @Override
-    public void onPing(String s) {
-
+    public void onPing(String msg) {
+        Util.debug("PING: " + msg);
     }
 
     @Override
@@ -130,7 +144,9 @@ public class IRCEvents implements IRCEventListener {
         if ( msg.startsWith("!") ) {
             String command = msg.substring(1);
             try {
-                CommandManager.executeCommand(command, user);
+                //TODO get user permission level
+                PermissionLevel level = PermissionTable.get(target, user.getNick());
+                CommandManager.executeCommand(command, user, target, level);
             } catch (Exception e) {
                 Util.error(e.getMessage());
                 e.printStackTrace();
@@ -147,6 +163,9 @@ public class IRCEvents implements IRCEventListener {
         if ( msg.equals("PING") ) {
             Backend.getConnection().doNotice(user.getNick(), "Pong");
         }
+        if ( msg.equals("TIME") ) {
+            CommandManager.executeCommand("time", user, target, PermissionLevel.SELF);
+        }
     }
 
     @Override
@@ -155,13 +174,16 @@ public class IRCEvents implements IRCEventListener {
     }
 
     @Override
-    public void onReply(int i, String s, String s1) {
-        System.out.println("Reply [" + i + "]: " + s1);
-        if ( i == 376 ) {
+    public void onReply(int code, String msg1, String msg2) {
+        Util.info("Reply [" + code + "]: " + msg1 + " : " + msg2);
+        if ( code == 376 || code == 332 ) {
             Backend.getConnection().doMode(BotConfiguration.getNickName(), "+B");
         }
-        if ( i == 396 ) {
+        if ( code == 396 ) {
             Backend.getConnection().doJoin(BotConfiguration.getChannel());
+        }
+        if ( code == 353 ) {
+            PermissionTable.build(msg1, msg2);
         }
     }
 
